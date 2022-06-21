@@ -1,18 +1,28 @@
 const canvas = document.querySelector("#jsCanvas");
 const ctx = canvas.getContext("2d");
 const colors = document.querySelectorAll(".jsColor");
+const range = document.querySelector("#jsRange");
+const mode = document.querySelector("#jsMode");
+const saveBtn = document.querySelector("#jsSave");
+
+const INITIAL_COLOR = "#2c2c2c";
 
 // canvas에 css로 width, height 값을 주는 것 뿐만 아니라 
 // 픽셀을 다루는 윈도우가 얼마나 큰지 canvas에 픽셀 width, height를 줘야한다.
 canvas.width = 700;
 canvas.height = 700;
 
+ctx.fillStyle = "#fff";
+ctx.fillRect(0,0,canvas.width,canvas.height);
+
 // strokeStyle은 선의 기본 색상을 정한다.
 // lineWidth는 선의 기본 너비
-ctx.strokeStyle = "#2c2c2c";
+ctx.strokeStyle = INITIAL_COLOR;
+ctx.fillStyle = INITIAL_COLOR;
 ctx.lineWidth = 2.5;
 
 let painting = false;
+let filling = false;
 
 function onMouseMove(event){
   const x = event.offsetX;
@@ -33,10 +43,6 @@ function onMouseMove(event){
   }
 }
 
-function onMouseDown(event){
-  painting = true;
-}
-
 function startPainting(){
   painting = true;
 }
@@ -45,17 +51,38 @@ function stopPainting(){
   painting = false;
 }
 
+function handleCanvasClick(){
+  if(filling == true){
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+}
+
+function handleCM(event){
+  event.preventDefault();
+}
+
+function handleSaveClick(){
+  const image = canvas.toDataURL("image/jpg");
+  const link = document.createElement("a");
+  link.href = image;
+  link.download = "test";
+  link.click();
+}
+
 if(canvas){
   canvas.addEventListener("mousemove", onMouseMove);
   canvas.addEventListener("mousedown", startPainting);
   canvas.addEventListener("mouseup", stopPainting);
   canvas.addEventListener("mouseleave", stopPainting);
+  canvas.addEventListener("click", handleCanvasClick);
+  canvas.addEventListener("contextmenu", handleCM)
 }
 
 
 function handleColorClick(event){
-  const color = event.target.style.backgroundColor
+  const color = event.target.style.backgroundColor;
   ctx.strokeStyle = color;
+  ctx.fillStyle = color;
 }
 
 // Array.from() 은 object로부터 array를 만든다
@@ -66,3 +93,31 @@ Array.from(colors).forEach(color => color.addEventListener("click", handleColorC
 context는 이 요소 안에서 우리가 픽셀에 접근할 수 있는 방법이야. 
 이론적으로는 이 안에 있는 픽셀들인거지 
 getContext()를 만들면 사용할 수 있다. */
+
+function handleRangeChange(event){
+  const rangeSize = event.target.value;
+  ctx.lineWidth = rangeSize;
+}
+
+if(range){
+  range.addEventListener("input", handleRangeChange);
+}
+
+function handleModeClick(){
+  if(filling == true){
+    filling = false;
+    mode.innerText = "FILL";
+  }else{
+    filling = true;
+    mode.innerText = "PAINT";
+  }
+  console.log(filling);
+}
+
+if(mode){
+  mode.addEventListener("click", handleModeClick);
+}
+
+if(saveBtn){
+  saveBtn.addEventListener("click", handleSaveClick);
+}
