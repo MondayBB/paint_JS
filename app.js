@@ -62,11 +62,11 @@ function handleCM(event){
 }
 
 function handleSaveClick(){
-  const image = canvas.toDataURL("image/jpg");
+  const image = canvas.toDataURL("image/jpeg");
   const link = document.createElement("a");
   link.href = image;
   link.download = "test";
-  link.click();
+  link.click(); // a태그가 강제로 클릭하게 하는 이벤트이다.
 }
 
 if(canvas){
@@ -85,7 +85,7 @@ function handleColorClick(event){
   ctx.fillStyle = color;
 }
 
-// Array.from() 은 object로부터 array를 만든다
+// Array.from() 은 object로부터 array를 만든다.
 Array.from(colors).forEach(color => color.addEventListener("click", handleColorClick));
 
 
